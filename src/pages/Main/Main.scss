@@ -1,0 +1,114 @@
+.wrap {
+  display: flex;
+  gap: 40px;
+}
+
+.leftBar {
+  flex-basis: 60%;
+}
+
+.leftBarHeader {
+  padding: 20px;
+
+  h3 {
+    font-size: 28px;
+  }
+}
+
+.rightBarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+
+  h3 {
+    font-size: 28px;
+  }
+}
+
+.price {
+  padding: 3px 15px;
+  color: white;
+  font-weight: 700;
+  border-radius: 15px;
+  background: #999;
+  font-size: 20px;
+}
+
+.rightBar {
+  flex-basis: 40%;
+}
+
+.leftBarContent {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 15px;
+}
+
+.pizzaItem {
+  width: 140px;
+  height: 140px;
+  border: 1px #999 solid;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid;
+  border-color: #999 #999 transparent #999;
+}
+
+.actions {
+  padding: 20px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid;
+  border-color: #999 #999 transparent #999;
+}
+
+.load {
+  height: 70px;
+  padding: 20px;
+  border: 1px #999 solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.counter {
+  height: 80px;
+  border: 1px solid;
+  border-color: #999 #999 transparent #999;
+  padding: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    text-align: center;
+    width: 35px;
+    padding: 5px;
+  }
+}
