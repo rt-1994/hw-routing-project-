@@ -1,26 +1,28 @@
-import React, {useEffect, useReducer} from "react";
+import React, {useReducer, useRef, useState} from "react";
+import {Link} from "react-router-dom";
 import styles from "./Main.scss";
 import images from "../../assets/images";
-import testa from "../../assets/images/Testa.jpg";
 import Button from '@mui/material/Button';
 import PizzaItem from "../../components/PizzaItem/PizzaItem";
-import {Link} from "react-router-dom";
-import defaultStyles from "../../styles.scss";
 import Counter from "../../components/Counter/Counter";
 import SettingsItem from "../../components/SettingItem/SettingItem";
 import reducer from "./reducer";
 import data from "../data";
 import {useForm} from "react-hook-form";
-
+import ModalComponent from "../../components/Modal/ModalComponent";
 
 export default function Main() {
     const {register, handleSubmit, getValues, reset} = useForm();
     const [pizzaData, dispatch] = useReducer(reducer, data)
+    const [modalCheckout, setModalCheckout] = useState(false);
+    const [token, setToken] = useState("");
+    const [modalLoad, setModalLoad] = useState(false);
+    const tokenInput = useRef(null)
+    const message = useRef(null)
     const onSubmit = data => console.log(data);
     const onChange = () => {
-        const ingredients = getValues();
-        dispatch({type: "addIngredient", ingredients})
-        dispatch({type: "price", ingredients})
+        dispatch({type: "addIngredient", ingredients: getValues()})
+        dispatch({type: "price", ingredients: getValues()})
     }
     const onReset = () => {
         reset()
@@ -39,6 +41,48 @@ export default function Main() {
         return data
     }
 
+    const savePizza = () => {
+        let data = "ABCDEFGHIJKLMNOPQRSTUVWXYXabefghijklmnopqrstuvwxyz0123456789$@-"
+        let token = ""
+        for (let i = 1; i <= 10; i++) {
+            token += data[Math.floor(Math.random() * 63)];
+        }
+        if (localStorage["pizza"]) {
+            let data = JSON.parse(localStorage["pizza"]);
+            data.push({key: token, pizza: getValues()});
+            localStorage.setItem("pizza", JSON.stringify(data));
+        } else {
+            localStorage.setItem("pizza", JSON.stringify([{key: token, pizza: getValues()}]));
+        }
+        showMessage()
+        setToken(token)
+        reset()
+        dispatch({type: "reset"})
+    }
+
+    const showMessage = () => {
+        message.current.style.display = "flex"
+        setTimeout(() => {
+            message.current.style.display = "none"
+        }, 20000)
+    }
+
+    const loadPizza = () => {
+        reset()
+        dispatch({type: "reset"})
+        let data = JSON.parse(localStorage["pizza"]);
+        const info = data.find((item) => item.key === tokenInput.current.value);
+        console.log(info)
+        dispatch({type: "addIngredient", ingredients: info.pizza});
+        dispatch({type: "price", ingredients: info.pizza});
+        setModalLoad(false);
+    }
+    const selectedIngredients = () => {
+        pizzaData.ingredients.map((item) => item.count = getValues()[item.key])
+
+        return pizzaData.ingredients
+    }
+
     return (
         <div className={styles.wrap}>
             <div className={styles.leftBar}>
@@ -47,7 +91,7 @@ export default function Main() {
                 </div>
                 <div className={styles.leftBarContent}>
                     <PizzaItem
-                        image={testa}
+                        image={images.testa}
                     />
                     {
                         getData().map((item) => {
@@ -77,6 +121,7 @@ export default function Main() {
                                 name={item.key}
                                 register={register}
                                 onChange={onChange}
+                                defaultValue={pizzaData.pizza.ingredients[item.key]}
                             />
                         </div>
                     ))}
@@ -89,17 +134,78 @@ export default function Main() {
                     </div>
 
                     <div className={styles.actions}>
-                        <Button variant="contained">Save Pizza</Button>
-                        <Button variant="contained" type="submit">Checkout</Button>
+                        <Button
+                            disabled={pizzaData.price === 0 ? true : false}
+                            onClick={savePizza}
+                            variant="contained">
+                            Save Pizza
+                        </Button>
+
+                        <Button
+                            disabled={pizzaData.price === 0 ? true : false}
+                            onClick={() => setModalCheckout(true)}
+                            variant="contained"
+                            type="submit">
+                            Checkout
+                        </Button>
+
                     </div>
 
                     <div className={styles.load}>
-                        <Button variant="contained">Load Pizza</Button>
+                        <Button
+                            onClick={() => setModalLoad(true)}
+                            variant="contained">
+                            Load Pizza
+                        </Button>
 
                     </div>
                 </form>
-                <p></p>
+                <div ref={message} className={styles.message}>
+                    <p>Your pizza configuration has been saved.</p>
+                    <p>Your number is: {token}</p>
+                </div>
+
+
             </div>
+
+            <ModalComponent
+                isOpen={modalCheckout}
+                className={styles.modalLoad}
+                overlayClassName={styles.modalOverlayLoad}
+            >
+                <div className={styles.checkoutModalContent}>
+                    <h2>Your Order</h2>
+                    <p>The pizza has the following ingredients:</p>
+                    <ul>
+                        {selectedIngredients().filter((item) => item.count > 0).map((element) => <li
+                            key={element.key}>{element.name}: {element.count}</li>)}
+                    </ul>
+                    <h3>Total price: {pizzaData.price} $</h3>
+                    <div className={styles.modalButtons}>
+                        <Button variant="contained" onClick={() => setModalCheckout(false)}>Cancel</Button>
+                        <Link to={'/checkout'}>
+                            <Button variant="contained" onClick={() => setModalCheckout(false)}>Continue</Button>
+                        </Link>
+                    </div>
+
+                </div>
+            </ModalComponent>
+
+            <ModalComponent
+                isOpen={modalLoad}
+                className={styles.modalLoad}
+                overlayClassName={styles.modalOverlayLoad}
+            >
+                <div className={styles.modalContent}>
+                    <span className={styles.close} onClick={() => setModalLoad(false)}>x</span>
+                    <p>Load pizza using a configuration number: </p>
+                    <div className={styles.modalInput}>
+                        <input ref={tokenInput} type="text"/>
+                        <Button variant="contained" onClick={loadPizza}>Submit</Button>
+                    </div>
+                </div>
+            </ModalComponent>
+
         </div>
     )
 }

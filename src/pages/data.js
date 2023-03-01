@@ -51,8 +51,9 @@ const data = {
         }
     ],
     pizza: {
-        ingredients: []
-    }
+        ingredients: {feta: "0", coldCuts: "0", mozzarella: "0", pepperoni: "0", spices: "0", swissCheese: "0", vegetables: "0"}
+    },
+    price: 0
 
 }
 

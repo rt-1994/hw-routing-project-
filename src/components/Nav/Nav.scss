@@ -1,0 +1,24 @@
+.nav{
+  height: 60px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #413f3f;
+  z-index: 10;
+
+  ul{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 100%;
+    padding: 20px;
+
+  }
+}
+
+.linkItem{
+  a{
+    color: white;
+  }
+}

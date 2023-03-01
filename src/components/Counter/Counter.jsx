@@ -3,7 +3,7 @@ import styles from "./Counter.scss";
 import Button from '@mui/material/Button';
 import {v4 as uuid} from 'uuid';
 
-function Counter({register, name, onChange}) {
+function Counter({register, name, onChange, defaultValue}) {
     const inputId = useMemo(()=> uuid(), [])
     const inputRef = register(name, { required: true,
         onChange: onChange
@@ -31,7 +31,7 @@ function Counter({register, name, onChange}) {
                 max={10}
                 min={0}
                 step={1}
-                defaultValue={0}
+                defaultValue={defaultValue}
                 readOnly={true}
             />
             <Button onClick={inc} className={styles.inc} variant="contained">+</Button>
