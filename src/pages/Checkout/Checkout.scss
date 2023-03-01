@@ -3,4 +3,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 15px;
+
+  input{
+    padding: 5px 10px;
+  }
+  label{
+    top: -10px;
+  }
 }

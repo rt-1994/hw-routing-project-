@@ -67,15 +67,14 @@ function Checkout(props) {
                             defaultValue="female"
                             name="radio-buttons-group"
                         >
-                            <FormControlLabel value="female" control={<Radio />} label="Female" />
-                            <FormControlLabel value="male" control={<Radio />} label="Male" />
-                            <FormControlLabel value="other" control={<Radio />} label="Other" />
+                            <FormControlLabel value="female" control={<Radio />} label="Yes" />
+                            <FormControlLabel value="male" control={<Radio />} label="No" />
                         </RadioGroup>
                     </div>
 
                     <div className={styles.formLine}>
                         <span>Do you have a coupon code: </span>
-                        <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
+                        <FormControlLabel control={<Checkbox defaultChecked />}/>
 
                     </div>
                     <div className={styles.formLine}>
