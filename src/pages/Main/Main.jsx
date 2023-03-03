@@ -19,7 +19,6 @@ export default function Main() {
     const [modalLoad, setModalLoad] = useState(false);
     const tokenInput = useRef(null)
     const message = useRef(null)
-    const onSubmit = data => console.log(data);
     const onChange = () => {
         dispatch({type: "addIngredient", ingredients: getValues()})
         dispatch({type: "price", ingredients: getValues()})
@@ -72,15 +71,20 @@ export default function Main() {
         dispatch({type: "reset"})
         let data = JSON.parse(localStorage["pizza"]);
         const info = data.find((item) => item.key === tokenInput.current.value);
-        console.log(info)
         dispatch({type: "addIngredient", ingredients: info.pizza});
         dispatch({type: "price", ingredients: info.pizza});
         setModalLoad(false);
     }
     const selectedIngredients = () => {
-        pizzaData.ingredients.map((item) => item.count = getValues()[item.key])
-
+        pizzaData.ingredients.map((item) => item.count = getValues()[item.key]);
+        localStorage.setItem("currentPizza", JSON.stringify(pizzaData.ingredients));
         return pizzaData.ingredients
+    }
+
+    const copyText = (event)=>{
+        event.preventDefault();
+        navigator.clipboard.writeText(event.target.innerText);
+        alert("Token copied to clipboard")
     }
 
     return (
@@ -110,7 +114,7 @@ export default function Main() {
                     <Button onClick={onReset} variant="contained">Reset pizza</Button>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className={styles.rightBarContent}>
+                <form onSubmit={handleSubmit()} className={styles.rightBarContent}>
                     {pizzaData.ingredients.map((item) => (
                         <div className={styles.counter} key={item.id}>
                             <SettingsItem
@@ -160,9 +164,9 @@ export default function Main() {
 
                     </div>
                 </form>
-                <div ref={message} className={styles.message}>
+                <div ref={message}  className={styles.message}>
                     <p>Your pizza configuration has been saved.</p>
-                    <p>Your number is: {token}</p>
+                    <p><span>Your number is: </span><span className={styles.token} onClick={()=>copyText(event)}>{token}</span></p>
                 </div>
 
 

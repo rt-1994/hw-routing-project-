@@ -1,99 +1,101 @@
-import React from 'react';
-import { Container, TextField, Button, Typography, Select, MenuItem } from '@mui/material';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import React, {useState} from 'react';
+import {Button, Container} from '@mui/material';
 import styles from "./Checkout.scss";
+import {useForm} from "react-hook-form";
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from "yup";
+import images from "../../assets/images";
+import {InputText} from "../../components/FormComponents/InputText";
+import {MultiLine} from "../../components/FormComponents/MultiLine";
+import {Dropdown} from "../../components/FormComponents/Dropdown";
+import {InputCheckbox} from "../../components/FormComponents/Checkbox";
+import {InputRadio} from "../../components/FormComponents/Radio";
 
-function Checkout(props) {
+
+const defaultValues = {
+    textValue: "",
+    radioValue: "",
+    checkboxValue: [],
+    dateValue: new Date(),
+    dropdownValue: "",
+    sliderValue: 0,
+};
+
+
+function Checkout() {
+
+    const [pizza, setPizza] = useState(JSON.parse(localStorage["currentPizza"]));
+    const schema = yup.object().shape({
+        email: yup.string().email().required(),
+        name: yup.string().required().min(2),
+        method: yup.string().required()
+    });
+
+    const methods = useForm({ defaultValues });
+    const { handleSubmit, reset, control, setValue, watch } = methods;
+    const onSubmit = (data) => console.log(data);
+
+    // const {control, handleSubmit, formState: {errors}, reset} = useForm({
+    //     resolver: yupResolver(schema)
+    // });
+
+    // const onSubmit = (data) => {
+    //     console.log(data);
+    // };
+
+    const onReset = () => {
+        reset()
+    }
+
     return (
-            <Container maxWidth="sm">
-                <h2>Ingredient info:</h2>
-                <div className={styles.ingredients}>
-
+        <Container maxWidth="sm">
+            <h2>Ingredient info:</h2>
+            <div className={styles.ingredients}>
+                {pizza.filter((item) =>
+                    item.count > 0).map((element) =>
+                    <div key={element.key}>
+                        <h3>{element.name}</h3>
+                        <img src={images[element.img]} alt=""/>
+                        <p>{element.count}</p>
+                    </div>)
+                }
+            </div>
+            <form onSubmit={handleSubmit(onSubmit)} className={styles.checkoutForm}>
+                <h2>Checkout info:</h2>
+                <div className={styles.formLine}>
+                    <span>Name: </span>
+                    <InputText name="Name" control={control} label="Name"/>
                 </div>
-                <Typography variant="h4">Checkout info:</Typography>
-                <form>
-                    <div className={styles.formLine}>
-                        <span>Name: </span>
-                        <TextField
-                            id="name"
-                            label="Name"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                        />
-                    </div>
-                    <div className={styles.formLine}>
-                        <span>Email: </span>
-                    <TextField
-                        id="email"
-                        label="Email"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                    />
-                    </div>
-                    <div className={styles.formLine}>
-                        <span>Choose delivery method: </span>
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        label="Age"
-                    >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                    </div>
-                    <div className={styles.formLine}>
-                        <span>Additional notes: </span>
-                    <TextField
-                        id="message"
-                        label="Message"
-                        variant="outlined"
-                        fullWidth
-                        multiline
-                        rows={5}
-                        margin="normal"
-                    />
-                    </div>
-
-                    <div className={styles.formLine}>
-                        <span>Are you a regular client: </span>
-                        <RadioGroup
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue="female"
-                            name="radio-buttons-group"
-                        >
-                            <FormControlLabel value="female" control={<Radio />} label="Yes" />
-                            <FormControlLabel value="male" control={<Radio />} label="No" />
-                        </RadioGroup>
-                    </div>
-
-                    <div className={styles.formLine}>
-                        <span>Do you have a coupon code: </span>
-                        <FormControlLabel control={<Checkbox defaultChecked />}/>
-
-                    </div>
-                    <div className={styles.formLine}>
-                        <span>Coupon: </span>
-                        <TextField
-                            id="name"
-                            label="Coupon"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                        />
-                    </div>
-                    <div className={styles.formLine}>
-                        <Button type="submit" variant="contained" color="primary">Reset</Button>
-                        <Button type="submit" variant="contained" color="primary">Submit</Button>
-                    </div>
-
-                </form>
-            </Container>
+                <div className={styles.formLine}>
+                    <span>Email: </span>
+                    <InputText name="Email" control={control} label="Email"/>
+                </div>
+                <div className={styles.formLineLeft}>
+                    <span>Choose delivery method: </span>
+                    <Dropdown name="Method" control={control} label="Method"/>
+                </div>
+                <div className={styles.formLine}>
+                    <span>Additional notes: </span>
+                    <MultiLine name="Message" control={control} label="Message"/>
+                </div>
+                <div className={styles.formLineLeft}>
+                    <span>Are you a regular client: </span>
+                    <InputRadio control={control} label="" name="client"/>
+                </div>
+                <div className={styles.formLineLeft}>
+                    <span>Do you have a coupon code: </span>
+                    <InputCheckbox name="Check" control={control} setValue={setValue} label=""/>
+                </div>
+                <div className={styles.formLine}>
+                    <span>Coupon: </span>
+                    <InputText name="Coupon" control={control} label="Coupon"/>
+                </div>
+                <div className={styles.buttons}>
+                    <Button onClick={onReset} variant="contained" color="primary">Reset</Button>
+                    <Button type="submit" variant="contained" color="primary">Submit</Button>
+                </div>
+            </form>
+        </Container>
     );
 }
 
