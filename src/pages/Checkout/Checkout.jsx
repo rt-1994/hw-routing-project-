@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, Container} from '@mui/material';
+import {Button, Checkbox, Container, FormHelperText} from '@mui/material';
 import styles from "./Checkout.scss";
 import {useForm} from "react-hook-form";
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -8,40 +8,23 @@ import images from "../../assets/images";
 import {InputText} from "../../components/FormComponents/InputText";
 import {MultiLine} from "../../components/FormComponents/MultiLine";
 import {Dropdown} from "../../components/FormComponents/Dropdown";
-import {InputCheckbox} from "../../components/FormComponents/Checkbox";
 import {InputRadio} from "../../components/FormComponents/Radio";
 
-
-const defaultValues = {
-    textValue: "",
-    radioValue: "",
-    checkboxValue: [],
-    dateValue: new Date(),
-    dropdownValue: "",
-    sliderValue: 0,
-};
-
-
 function Checkout() {
+
+    const [coupon, setCoupon] = useState(false);
 
     const [pizza, setPizza] = useState(JSON.parse(localStorage["currentPizza"]));
     const schema = yup.object().shape({
         email: yup.string().email().required(),
         name: yup.string().required().min(2),
-        method: yup.string().required()
+        coupon: coupon ? yup.string().required(): "",
+        method: yup.string().required('Please select an option'),
     });
 
-    const methods = useForm({ defaultValues });
-    const { handleSubmit, reset, control, setValue, watch } = methods;
-    const onSubmit = (data) => console.log(data);
-
-    // const {control, handleSubmit, formState: {errors}, reset} = useForm({
-    //     resolver: yupResolver(schema)
-    // });
-
-    // const onSubmit = (data) => {
-    //     console.log(data);
-    // };
+    const methods = useForm({resolver: yupResolver(schema)});
+    const {handleSubmit, reset, control, setValue, watch, formState: {errors}} = methods;
+    const onSubmit = (data) => alert("Submited");
 
     const onReset = () => {
         reset()
@@ -64,31 +47,34 @@ function Checkout() {
                 <h2>Checkout info:</h2>
                 <div className={styles.formLine}>
                     <span>Name: </span>
-                    <InputText name="Name" control={control} label="Name"/>
+                    <InputText key="name" name="name" control={control} label="Name" status={true}/>
                 </div>
                 <div className={styles.formLine}>
                     <span>Email: </span>
-                    <InputText name="Email" control={control} label="Email"/>
+                    <InputText key="email" name="email" control={control} label="Email" status={true}/>
                 </div>
                 <div className={styles.formLineLeft}>
                     <span>Choose delivery method: </span>
-                    <Dropdown name="Method" control={control} label="Method"/>
+                    <Dropdown name="method" control={control} label="Method"/>
+                    {errors.method && <FormHelperText error>{errors.method.message}</FormHelperText>}
                 </div>
                 <div className={styles.formLine}>
                     <span>Additional notes: </span>
-                    <MultiLine name="Message" control={control} label="Message"/>
+                    <MultiLine name="message" control={control} label="Message"/>
                 </div>
                 <div className={styles.formLineLeft}>
                     <span>Are you a regular client: </span>
-                    <InputRadio control={control} label="" name="client"/>
+                    <InputRadio control={control} label="Yes" value="Yes" checked name="client"/>
+                    <InputRadio control={control} label="No" value="No" name="client"/>
                 </div>
                 <div className={styles.formLineLeft}>
                     <span>Do you have a coupon code: </span>
-                    <InputCheckbox name="Check" control={control} setValue={setValue} label=""/>
+                    <Checkbox onChange={() => setCoupon(!coupon)}/>
                 </div>
+
                 <div className={styles.formLine}>
                     <span>Coupon: </span>
-                    <InputText name="Coupon" control={control} label="Coupon"/>
+                    <InputText key="coupon" name="coupon" control={control} label="Coupon" status={coupon}/>
                 </div>
                 <div className={styles.buttons}>
                     <Button onClick={onReset} variant="contained" color="primary">Reset</Button>

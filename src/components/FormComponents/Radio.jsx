@@ -4,36 +4,23 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import { Controller } from "react-hook-form";
 
-const options = [
-    {
-        label: "Yes",
-        value: "1",
-    },
-    {
-        label: "No",
-        value: "2",
-    },
-];
-
-export const InputRadio = ({name, control, label}) => {
+export const InputRadio = ({name, control, value, label}) => {
     const generateRadioOptions = () => {
-        return options.map((singleOption) => (
-            <FormControlLabel
-                key={Math.floor(Math.random()*100000)}
-                value={singleOption.value}
-                label={singleOption.label}
+        // return options.map((singleOption) => (
+            return (<FormControlLabel
+                value={value}
+                label={label}
                 control={<Radio />}
-            />
-        ));
+            />)
+        // ));
     };
 
     return (
         <FormControl component="fieldset">
-            <FormLabel component="legend">{label}</FormLabel>
             <Controller
                 name={name}
                 control={control}
-                defaultValue={''}
+                defaultValue="No"
                 render={({
                              field: { onChange, value },
                              fieldState: { error },

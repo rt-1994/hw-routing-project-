@@ -5,11 +5,11 @@ import { useFormContext, Controller } from "react-hook-form";
 
 const options = [
     {
-        label: "Dropdown Option 1",
+        label: "Delivery",
         value: "1",
     },
     {
-        label: "Dropdown Option 2",
+        label: "Local pickup",
         value: "2",
     },
 ];
